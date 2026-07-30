@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FFABPICS — Retouche Photo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>FFABPICS — Photo Editor</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1b1420">
 <link rel="icon" href="icons/icon-192.png">
@@ -25,9 +25,9 @@
     --danger: #d98a7c;
     --radius: 14px;
   }
-  *{ box-sizing:border-box; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
   html,body{
-    margin:0; padding:0; height:100%;
+    margin:0; padding:0; min-height:100%;
     background: radial-gradient(1200px 800px at 15% -10%, #2a1f31 0%, var(--bg) 45%, var(--bg-deep) 100%);
     color: var(--ivory);
     font-family: 'Manrope', sans-serif;
@@ -39,18 +39,20 @@
 
   header.top{
     display:flex; align-items:center; justify-content:space-between;
-    padding: 22px 32px; border-bottom: 1px solid var(--line);
-    backdrop-filter: blur(6px);
+    padding: 18px 22px; border-bottom: 1px solid var(--line);
+    position: sticky; top:0; z-index: 20;
+    background: rgba(27,20,32,0.92); backdrop-filter: blur(6px);
   }
   .brand{ display:flex; align-items:center; gap:12px; }
   .brand .mark{
-    width:38px; height:38px; border-radius:50%;
+    width:36px; height:36px; border-radius:50%;
     border:1px solid var(--gold);
     display:flex; align-items:center; justify-content:center;
-    font-family:'Playfair Display', serif; font-style:italic; font-size:18px; color:var(--gold-soft);
+    font-family:'Playfair Display', serif; font-style:italic; font-size:17px; color:var(--gold-soft);
+    flex-shrink:0;
   }
-  .brand .name{ font-size:22px; letter-spacing:0.06em; font-weight:600; }
-  .brand .tagline{ font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+  .brand .name{ font-size:20px; letter-spacing:0.05em; font-weight:600; }
+  .brand .tagline{ font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
 
   main{
     flex:1; display:grid; grid-template-columns: 320px 1fr; gap:0;
@@ -90,12 +92,19 @@
   }
   .auto-btn:hover{ background: rgba(201,160,99,0.18); }
 
-  .transform-row{ display:flex; gap:8px; }
+  .transform-row{ display:flex; gap:8px; flex-wrap:wrap; }
   .transform-row button{
-    flex:1; padding:10px 6px; border-radius:10px; border:1px solid var(--line);
+    flex:1; min-width:56px; padding:10px 6px; border-radius:10px; border:1px solid var(--line);
     background: rgba(255,255,255,0.02); color:var(--ivory); cursor:pointer; font-size:16px;
   }
   .transform-row button:hover{ border-color: var(--gold); }
+  .crop-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .crop-chip{
+    padding:7px 12px; border-radius:999px; border:1px solid var(--line);
+    background: rgba(255,255,255,0.02); color:var(--ivory);
+    font-size:12px; cursor:pointer;
+  }
+  .crop-chip:hover{ border-color: var(--gold); }
 
   .slider-row{ margin-bottom:16px; }
   .slider-row label{
@@ -108,13 +117,13 @@
     background: var(--line); outline:none; cursor:pointer;
   }
   input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance:none; width:15px; height:15px; border-radius:50%;
+    -webkit-appearance:none; width:17px; height:17px; border-radius:50%;
     background: radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold));
     border:2px solid var(--bg-deep); cursor:pointer;
     box-shadow: 0 0 0 1px var(--gold);
   }
   input[type=range]::-moz-range-thumb{
-    width:15px; height:15px; border-radius:50%;
+    width:17px; height:17px; border-radius:50%;
     background: radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold));
     border:2px solid var(--bg-deep); cursor:pointer;
   }
@@ -131,21 +140,21 @@
   /* ---------- STAGE ---------- */
   section.stage{
     position:relative; display:flex; flex-direction:column; align-items:center;
-    justify-content:center; padding:28px; min-height:0;
+    justify-content:center; padding:24px; min-height:0;
   }
 
   .empty-state{
     width:100%; max-width:560px; text-align:center;
     border: 1.5px dashed var(--line); border-radius: 20px;
-    padding: 60px 30px; cursor:pointer; transition: border-color .2s ease, background .2s ease;
+    padding: 50px 26px; cursor:pointer; transition: border-color .2s ease, background .2s ease;
   }
   .empty-state:hover, .empty-state.dragover{ border-color: var(--gold); background: rgba(201,160,99,0.04); }
-  .empty-state .icon{ font-size:34px; margin-bottom:14px; opacity:0.8; }
-  .empty-state h2{ font-size:24px; font-weight:500; margin:0 0 10px; }
+  .empty-state .icon{ font-size:32px; margin-bottom:14px; opacity:0.8; }
+  .empty-state h2{ font-size:22px; font-weight:500; margin:0 0 10px; }
   .empty-state p{ color:var(--muted); font-size:13.5px; line-height:1.6; margin:0 0 22px; }
   .empty-actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
   .upload-btn{
-    display:inline-flex; align-items:center; gap:8px; padding: 12px 26px; border-radius:999px;
+    display:inline-flex; align-items:center; gap:8px; padding: 12px 24px; border-radius:999px;
     background: linear-gradient(180deg, var(--gold-soft), var(--gold));
     color:#2a1a12; font-weight:700; font-size:13px; letter-spacing:0.03em;
     border:none; cursor:pointer;
@@ -157,11 +166,11 @@
   .canvas-frame{
     position:relative; border-radius: 4px; overflow:hidden;
     box-shadow: 0 30px 70px -20px rgba(0,0,0,0.6), 0 0 0 1px var(--line);
-    max-width:100%; max-height: calc(100vh - 210px);
+    max-width:100%; max-height: calc(100vh - 260px);
     background:#000;
     display:none;
   }
-  .canvas-frame canvas{ display:block; max-width:100%; max-height: calc(100vh - 210px); width:auto; height:auto; }
+  .canvas-frame canvas{ display:block; max-width:100%; max-height: calc(100vh - 260px); width:auto; height:auto; }
   .canvas-frame #frontCanvas{ position:absolute; top:0; left:0; }
 
   .tag{
@@ -188,7 +197,7 @@
     color: var(--gold-soft); font-size:15px;
   }
 
-  .stage-actions{ display:none; margin-top:22px; gap:12px; flex-wrap:wrap; justify-content:center; }
+  .stage-actions{ display:none; margin-top:20px; gap:12px; flex-wrap:wrap; justify-content:center; }
   .stage-actions.show{ display:flex; }
   .btn{
     padding: 11px 22px; border-radius: 999px; font-size:13px; font-weight:700;
@@ -201,6 +210,7 @@
     background: linear-gradient(180deg, var(--gold-soft), var(--gold));
     color:#2a1a12; border:none;
   }
+  .btn.primary:disabled{ opacity:0.6; cursor:default; }
   .btn.ghost{ color: var(--muted); }
 
   #fileInput{ display:none; }
@@ -226,10 +236,24 @@
   .modal-actions{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; justify-content:center; }
   .cam-error{ color: var(--rose); font-size:13px; text-align:center; padding: 30px 10px; }
 
+  .toast{
+    position:fixed; left:50%; bottom:28px; transform: translateX(-50%) translateY(20px);
+    background: var(--panel-soft); border:1px solid var(--gold); color:var(--ivory);
+    padding:12px 20px; border-radius:999px; font-size:13px; z-index:80;
+    opacity:0; pointer-events:none; transition: all .25s ease;
+    box-shadow: 0 20px 50px -15px rgba(0,0,0,0.6);
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- MOBILE: stack stage above controls, natural page scroll ---------- */
   @media (max-width: 820px){
-    main{ grid-template-columns: 1fr; }
-    aside.panel{ border-right:none; border-bottom:1px solid var(--line); padding-bottom:24px; max-height: 42vh; }
-    .canvas-frame, .canvas-frame canvas{ max-height: 46vh; }
+    main{ display:flex; flex-direction:column; }
+    section.stage{ order:1; padding-top:18px; }
+    aside.panel{
+      order:2; border-right:none; border-top:1px solid var(--line);
+      max-height:none; overflow-y:visible; padding-bottom:60px;
+    }
+    .canvas-frame, .canvas-frame canvas{ max-height: 62vh; }
   }
 </style>
 </head>
@@ -241,115 +265,123 @@
       <div class="mark">F</div>
       <div>
         <div class="name">FFABPICS</div>
-        <div class="tagline">Retouche &amp; Beauté</div>
+        <div class="tagline">Photo Editor</div>
       </div>
     </div>
-    <div class="tagline" style="font-size:11px; color:var(--muted);">Traité localement dans votre navigateur</div>
   </header>
 
   <main>
-    <aside class="panel" id="panel">
-      <div id="controlsWrap" class="disabled-veil">
-
-        <div class="section-title">Filtres</div>
-        <div class="presets" id="presets"></div>
-        <button class="auto-btn" id="autoBtn">✦ Amélioration automatique</button>
-
-        <div class="section-title">Transformer</div>
-        <div class="transform-row">
-          <button id="rotateLeftBtn" title="Rotation gauche">⟲</button>
-          <button id="rotateRightBtn" title="Rotation droite">⟳</button>
-          <button id="flipBtn" title="Miroir horizontal">⇋</button>
-        </div>
-
-        <div class="section-title">Lumière</div>
-        <div class="slider-row"><label>Exposition <span class="val" id="val-expo">0</span></label>
-          <input type="range" id="expo" min="-50" max="50" value="0"></div>
-        <div class="slider-row"><label>Luminosité <span class="val" id="val-bright">0</span></label>
-          <input type="range" id="bright" min="-50" max="50" value="0"></div>
-        <div class="slider-row"><label>Contraste <span class="val" id="val-contrast">0</span></label>
-          <input type="range" id="contrast" min="-50" max="50" value="0"></div>
-        <div class="slider-row"><label>Ombres <span class="val" id="val-shadows">0</span></label>
-          <input type="range" id="shadows" min="-50" max="50" value="0"></div>
-        <div class="slider-row"><label>Hautes lumières <span class="val" id="val-highlights">0</span></label>
-          <input type="range" id="highlights" min="-50" max="50" value="0"></div>
-
-        <div class="section-title">Couleur</div>
-        <div class="slider-row"><label>Saturation <span class="val" id="val-sat">0</span></label>
-          <input type="range" id="sat" min="-50" max="50" value="0"></div>
-        <div class="slider-row"><label>Vibrance <span class="val" id="val-vibrance">0</span></label>
-          <input type="range" id="vibrance" min="-50" max="50" value="0"></div>
-        <div class="slider-row"><label>Chaleur <span class="val" id="val-warmth">0</span></label>
-          <input type="range" id="warmth" min="-50" max="50" value="0"></div>
-        <div class="slider-row"><label>Teinte <span class="val" id="val-tint">0</span></label>
-          <input type="range" id="tint" min="-50" max="50" value="0"></div>
-
-        <div class="section-title">Peau</div>
-        <div class="slider-row"><label>Lissage <span class="val" id="val-smooth">0</span></label>
-          <input type="range" id="smooth" min="0" max="100" value="0"></div>
-
-        <div class="section-title">Détails</div>
-        <div class="slider-row"><label>Netteté <span class="val" id="val-sharp">0</span></label>
-          <input type="range" id="sharp" min="0" max="100" value="0"></div>
-        <div class="slider-row"><label>Clarté <span class="val" id="val-clarity">0</span></label>
-          <input type="range" id="clarity" min="0" max="100" value="0"></div>
-        <div class="slider-row"><label>Réduction du bruit <span class="val" id="val-denoise">0</span></label>
-          <input type="range" id="denoise" min="0" max="100" value="0"></div>
-
-        <div class="section-title">Finition</div>
-        <div class="slider-row"><label>Vignette &amp; éclat <span class="val" id="val-glow">0</span></label>
-          <input type="range" id="glow" min="0" max="100" value="0"></div>
-        <div class="slider-row"><label>Grain photo <span class="val" id="val-grain">0</span></label>
-          <input type="range" id="grain" min="0" max="100" value="0"></div>
-
-        <div class="reset-link" id="resetSliders">Réinitialiser les réglages</div>
-      </div>
-    </aside>
-
     <section class="stage" id="stage">
       <div class="empty-state" id="dropZone">
         <div class="icon">✦</div>
-        <h2>Déposez votre photo</h2>
-        <p>Glissez une image ici, choisissez un fichier, ou prenez une photo directement.<br>Traitement 100% local, rien n'est envoyé sur internet.</p>
+        <h2>Add a photo</h2>
+        <p>Drop an image here, choose a file, or take a photo directly.<br>Everything is processed on your device — nothing is uploaded.</p>
         <div class="empty-actions">
-          <button class="upload-btn" id="uploadBtn">Choisir une photo</button>
-          <button class="upload-btn secondary" id="openCamBtn">📷 Prendre une photo</button>
+          <button class="upload-btn" id="uploadBtn">Choose a photo</button>
+          <button class="upload-btn secondary" id="openCamBtn">📷 Take a photo</button>
         </div>
         <input type="file" id="fileInput" accept="image/*">
       </div>
 
       <div class="canvas-frame" id="canvasFrame">
-        <span class="tag before">Avant</span>
-        <span class="tag after">Après</span>
+        <span class="tag before">Before</span>
+        <span class="tag after">After</span>
         <canvas id="backCanvas"></canvas>
         <canvas id="frontCanvas"></canvas>
         <div class="divider-handle" id="divider"></div>
       </div>
 
       <div class="stage-actions" id="stageActions">
-        <button class="btn ghost" id="newPhotoBtn">Nouvelle photo</button>
-        <button class="btn ghost" id="retakeBtn">📷 Reprendre une photo</button>
-        <button class="btn primary" id="downloadBtn">Télécharger</button>
+        <button class="btn ghost" id="newPhotoBtn">New photo</button>
+        <button class="btn ghost" id="retakeBtn">📷 Retake</button>
+        <button class="btn primary" id="downloadBtn">Download HD</button>
       </div>
     </section>
+
+    <aside class="panel" id="panel">
+      <div id="controlsWrap" class="disabled-veil">
+
+        <div class="section-title">Filters</div>
+        <div class="presets" id="presets"></div>
+        <button class="auto-btn" id="autoBtn">✦ Auto Enhance</button>
+
+        <div class="section-title">Transform &amp; Crop</div>
+        <div class="transform-row">
+          <button id="rotateLeftBtn" title="Rotate left">⟲</button>
+          <button id="rotateRightBtn" title="Rotate right">⟳</button>
+          <button id="flipBtn" title="Flip horizontal">⇋</button>
+        </div>
+        <div class="crop-row">
+          <div class="crop-chip" data-ratio="0">Reset</div>
+          <div class="crop-chip" data-ratio="1">Square</div>
+          <div class="crop-chip" data-ratio="0.8">Portrait 4:5</div>
+          <div class="crop-chip" data-ratio="1.5">Landscape 3:2</div>
+          <div class="crop-chip" data-ratio="1.778">Wide 16:9</div>
+        </div>
+
+        <div class="section-title">Light</div>
+        <div class="slider-row"><label>Exposure <span class="val" id="val-expo">0</span></label>
+          <input type="range" id="expo" min="-50" max="50" value="0"></div>
+        <div class="slider-row"><label>Brightness <span class="val" id="val-bright">0</span></label>
+          <input type="range" id="bright" min="-50" max="50" value="0"></div>
+        <div class="slider-row"><label>Contrast <span class="val" id="val-contrast">0</span></label>
+          <input type="range" id="contrast" min="-50" max="50" value="0"></div>
+        <div class="slider-row"><label>Fill Light <span class="val" id="val-shadows">0</span></label>
+          <input type="range" id="shadows" min="-50" max="50" value="0"></div>
+        <div class="slider-row"><label>Highlights <span class="val" id="val-highlights">0</span></label>
+          <input type="range" id="highlights" min="-50" max="50" value="0"></div>
+
+        <div class="section-title">Color Grading</div>
+        <div class="slider-row"><label>Saturation <span class="val" id="val-sat">0</span></label>
+          <input type="range" id="sat" min="-50" max="50" value="0"></div>
+        <div class="slider-row"><label>Vibrance <span class="val" id="val-vibrance">0</span></label>
+          <input type="range" id="vibrance" min="-50" max="50" value="0"></div>
+        <div class="slider-row"><label>Warmth <span class="val" id="val-warmth">0</span></label>
+          <input type="range" id="warmth" min="-50" max="50" value="0"></div>
+        <div class="slider-row"><label>Tint <span class="val" id="val-tint">0</span></label>
+          <input type="range" id="tint" min="-50" max="50" value="0"></div>
+
+        <div class="section-title">Skin</div>
+        <div class="slider-row"><label>Smoothing <span class="val" id="val-smooth">0</span></label>
+          <input type="range" id="smooth" min="0" max="100" value="0"></div>
+
+        <div class="section-title">Details</div>
+        <div class="slider-row"><label>Sharpness <span class="val" id="val-sharp">0</span></label>
+          <input type="range" id="sharp" min="0" max="100" value="0"></div>
+        <div class="slider-row"><label>Clarity <span class="val" id="val-clarity">0</span></label>
+          <input type="range" id="clarity" min="0" max="100" value="0"></div>
+        <div class="slider-row"><label>Noise Reduction <span class="val" id="val-denoise">0</span></label>
+          <input type="range" id="denoise" min="0" max="100" value="0"></div>
+
+        <div class="section-title">Finish</div>
+        <div class="slider-row"><label>Vignette &amp; Glow <span class="val" id="val-glow">0</span></label>
+          <input type="range" id="glow" min="0" max="100" value="0"></div>
+        <div class="slider-row"><label>Film Grain <span class="val" id="val-grain">0</span></label>
+          <input type="range" id="grain" min="0" max="100" value="0"></div>
+
+        <div class="reset-link" id="resetSliders">Reset all adjustments</div>
+      </div>
+    </aside>
   </main>
 </div>
 
 <!-- Camera modal -->
 <div class="modal-overlay" id="cameraModal">
   <div class="modal-box">
-    <h3>Prendre une photo</h3>
+    <h3>Take a photo</h3>
     <div id="cameraContent">
       <video id="cameraVideo" autoplay playsinline muted></video>
     </div>
     <canvas id="captureCanvas" style="display:none"></canvas>
     <div class="modal-actions">
-      <button class="btn ghost" id="closeCamBtn">Annuler</button>
-      <button class="btn ghost" id="switchCamBtn">🔄 Changer de caméra</button>
-      <button class="btn primary" id="shootBtn">Capturer</button>
+      <button class="btn ghost" id="closeCamBtn">Cancel</button>
+      <button class="btn ghost" id="switchCamBtn">🔄 Switch camera</button>
+      <button class="btn primary" id="shootBtn">Capture</button>
     </div>
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 (function(){
@@ -371,6 +403,7 @@
   const rotateLeftBtn = document.getElementById('rotateLeftBtn');
   const rotateRightBtn = document.getElementById('rotateRightBtn');
   const flipBtn = document.getElementById('flipBtn');
+  const toast = document.getElementById('toast');
 
   const openCamBtn = document.getElementById('openCamBtn');
   const cameraModal = document.getElementById('cameraModal');
@@ -384,11 +417,25 @@
   const backCtx = backCanvas.getContext('2d');
   const frontCtx = frontCanvas.getContext('2d');
 
+  // Full-resolution source (kept for HD export) and its immutable pristine backup
+  let fullCanvas = document.createElement('canvas');
+  let fullCtx = fullCanvas.getContext('2d');
+  let fullW = 0, fullH = 0;
+  let pristineCanvas = document.createElement('canvas');
+
+  // Downscaled working canvas used for fast live preview
   let workCanvas = document.createElement('canvas');
   let workCtx = workCanvas.getContext('2d');
   let W = 0, H = 0;
   let splitPct = 50;
   let hasImage = false;
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=> toast.classList.remove('show'), 2600);
+  }
 
   const sliderKeys = ['smooth','expo','bright','contrast','shadows','highlights','sat','vibrance','warmth','tint','clarity','denoise','sharp','glow','grain'];
   const sliders = {}, vals = {};
@@ -398,20 +445,20 @@
   });
 
   const PRESETS = {
-    'Naturel':  { smooth:18, bright:4,  contrast:4,  sat:6,   warmth:4,  sharp:8,  glow:6  },
-    'Glam':     { smooth:38, bright:8,  contrast:12, sat:18,  vibrance:10, warmth:10, sharp:14, glow:24 },
-    'Douceur':  { smooth:55, bright:10, contrast:-4, sat:-6,  warmth:14, sharp:0,  glow:18, grain:6 },
-    'Éclat':    { smooth:22, bright:14, contrast:10, sat:14,  warmth:-2, sharp:16, glow:34, highlights:8 },
-    'Studio':   { smooth:10, bright:2,  contrast:16, sat:0,   sharp:22, glow:10, clarity:14 },
-    'N&B':      { smooth:14, bright:2,  contrast:22, sat:-50, sharp:14, glow:16, clarity:10 },
-    'Vintage':  { smooth:12, bright:-2, contrast:-8, sat:-18, warmth:22, tint:8,  grain:34, glow:20, highlights:-6 },
-    'Cinéma':   { smooth:8,  bright:-4, contrast:22, sat:-10, warmth:-8, tint:6,  clarity:16, glow:28, shadows:10 },
-    'Été':      { smooth:20, bright:10, contrast:6,  sat:20,  vibrance:16, warmth:18, sharp:10, glow:14 },
-    'Froid':    { smooth:16, bright:2,  contrast:8,  sat:-4,  warmth:-26, tint:-4, sharp:10, glow:10 },
-    'Doré':     { smooth:24, bright:8,  contrast:6,  sat:10,  warmth:30, tint:6,  glow:26, highlights:10 },
-    'Pastel':   { smooth:34, bright:14, contrast:-14,sat:-16, warmth:6,  tint:4,  glow:16, shadows:-10 },
-    'Mat':      { smooth:20, bright:2,  contrast:-16,sat:-8,  shadows:18, highlights:-14, grain:10, glow:8 },
-    'Portrait': { smooth:44, bright:6,  contrast:8,  sat:8,   vibrance:8, warmth:8, sharp:12, glow:20, clarity:8 },
+    'Natural':   { smooth:18, bright:4,  contrast:4,  sat:6,   warmth:4,  sharp:8,  glow:6  },
+    'Glam':      { smooth:38, bright:8,  contrast:12, sat:18,  vibrance:10, warmth:10, sharp:14, glow:24 },
+    'Soft':      { smooth:55, bright:10, contrast:-4, sat:-6,  warmth:14, sharp:0,  glow:18, grain:6 },
+    'Glow':      { smooth:22, bright:14, contrast:10, sat:14,  warmth:-2, sharp:16, glow:34, highlights:8 },
+    'Studio':    { smooth:10, bright:2,  contrast:16, sat:0,   sharp:22, glow:10, clarity:14 },
+    'B&W':       { smooth:14, bright:2,  contrast:22, sat:-50, sharp:14, glow:16, clarity:10 },
+    'Vintage':   { smooth:12, bright:-2, contrast:-8, sat:-18, warmth:22, tint:8,  grain:34, glow:20, highlights:-6 },
+    'Cinema':    { smooth:8,  bright:-4, contrast:22, sat:-10, warmth:-8, tint:6,  clarity:16, glow:28, shadows:10 },
+    'Summer':    { smooth:20, bright:10, contrast:6,  sat:20,  vibrance:16, warmth:18, sharp:10, glow:14 },
+    'Cool':      { smooth:16, bright:2,  contrast:8,  sat:-4,  warmth:-26, tint:-4, sharp:10, glow:10 },
+    'Golden':    { smooth:24, bright:8,  contrast:6,  sat:10,  warmth:30, tint:6,  glow:26, highlights:10 },
+    'Pastel':    { smooth:34, bright:14, contrast:-14,sat:-16, warmth:6,  tint:4,  glow:16, shadows:-10 },
+    'Matte':     { smooth:20, bright:2,  contrast:-16,sat:-8,  shadows:18, highlights:-14, grain:10, glow:8 },
+    'Portrait':  { smooth:44, bright:6,  contrast:8,  sat:8,   vibrance:8, warmth:8, sharp:12, glow:20, clarity:8 },
   };
 
   Object.keys(PRESETS).forEach(name=>{
@@ -424,9 +471,9 @@
   });
   const noneChip = document.createElement('div');
   noneChip.className = 'preset-chip active';
-  noneChip.textContent = 'Aucun';
-  noneChip.dataset.name = 'Aucun';
-  noneChip.addEventListener('click', ()=> applyPreset('Aucun'));
+  noneChip.textContent = 'None';
+  noneChip.dataset.name = 'None';
+  noneChip.addEventListener('click', ()=> applyPreset('None'));
   presetsWrap.insertBefore(noneChip, presetsWrap.firstChild);
 
   function setActiveChip(name){
@@ -436,7 +483,7 @@
   function applyPreset(name){
     setActiveChip(name);
     const base = {}; sliderKeys.forEach(k=> base[k]=0);
-    const p = name==='Aucun' ? base : Object.assign({}, base, PRESETS[name]);
+    const p = name==='None' ? base : Object.assign({}, base, PRESETS[name]);
     sliderKeys.forEach(k=>{
       sliders[k].value = p[k];
       vals[k].textContent = p[k];
@@ -452,7 +499,11 @@
     });
   });
 
-  resetSliders.addEventListener('click', ()=> applyPreset('Aucun'));
+  resetSliders.addEventListener('click', ()=> applyPreset('None'));
+
+  function readValues(){
+    const v = {}; sliderKeys.forEach(k=> v[k] = +sliders[k].value); return v;
+  }
 
   // ---------- Auto enhance ----------
   autoBtn.addEventListener('click', ()=>{
@@ -487,37 +538,79 @@
     scheduleRender();
   });
 
-  // ---------- Transform ----------
-  function rotateWork(deg){
+  // ---------- Full-resolution source management ----------
+  function setFullFromDraw(w, h, drawFn){
+    fullCanvas.width = w; fullCanvas.height = h;
+    fullCtx.clearRect(0,0,w,h);
+    drawFn(fullCtx);
+    fullW = w; fullH = h;
+    rebuildWorkFromFull();
+  }
+
+  function rebuildWorkFromFull(){
+    const MAX = 1400;
+    const scale = Math.min(1, MAX / Math.max(fullW, fullH));
+    W = Math.round(fullW*scale); H = Math.round(fullH*scale);
+    workCanvas.width = W; workCanvas.height = H;
+    workCtx.clearRect(0,0,W,H);
+    workCtx.drawImage(fullCanvas, 0,0, W, H);
+    backCanvas.width = W; backCanvas.height = H;
+    frontCanvas.width = W; frontCanvas.height = H;
+    backCtx.drawImage(workCanvas, 0,0);
+  }
+
+  // ---------- Transform: rotate / flip / reset ----------
+  function rotateFull(deg){
     const tmp = document.createElement('canvas');
-    tmp.width = H; tmp.height = W;
+    tmp.width = fullH; tmp.height = fullW;
     const tctx = tmp.getContext('2d');
     tctx.translate(tmp.width/2, tmp.height/2);
     tctx.rotate(deg * Math.PI/180);
-    tctx.drawImage(workCanvas, -W/2, -H/2);
-    W = tmp.width; H = tmp.height;
-    workCanvas.width = W; workCanvas.height = H;
-    workCtx.clearRect(0,0,W,H);
-    workCtx.drawImage(tmp,0,0);
-    backCanvas.width = W; backCanvas.height = H;
-    frontCanvas.width = W; frontCanvas.height = H;
-    backCtx.drawImage(workCanvas,0,0);
+    tctx.drawImage(fullCanvas, -fullW/2, -fullH/2);
+    setFullFromDraw(tmp.width, tmp.height, ctx=> ctx.drawImage(tmp,0,0));
     render();
   }
-  function flipWork(){
+  function flipFull(){
     const tmp = document.createElement('canvas');
-    tmp.width = W; tmp.height = H;
+    tmp.width = fullW; tmp.height = fullH;
     const tctx = tmp.getContext('2d');
-    tctx.translate(W,0); tctx.scale(-1,1);
-    tctx.drawImage(workCanvas,0,0);
-    workCtx.clearRect(0,0,W,H);
-    workCtx.drawImage(tmp,0,0);
-    backCtx.drawImage(workCanvas,0,0);
+    tctx.translate(fullW,0); tctx.scale(-1,1);
+    tctx.drawImage(fullCanvas,0,0);
+    setFullFromDraw(fullW, fullH, ctx=> ctx.drawImage(tmp,0,0));
     render();
   }
-  rotateLeftBtn.addEventListener('click', ()=> hasImage && rotateWork(-90));
-  rotateRightBtn.addEventListener('click', ()=> hasImage && rotateWork(90));
-  flipBtn.addEventListener('click', ()=> hasImage && flipWork());
+  function resetTransform(){
+    setFullFromDraw(pristineCanvas.width, pristineCanvas.height, ctx=> ctx.drawImage(pristineCanvas,0,0));
+    render();
+  }
+  rotateLeftBtn.addEventListener('click', ()=> hasImage && rotateFull(-90));
+  rotateRightBtn.addEventListener('click', ()=> hasImage && rotateFull(90));
+  flipBtn.addEventListener('click', ()=> hasImage && flipFull());
+
+  // ---------- Crop ----------
+  function cropToRatio(rw, rh){
+    if(!hasImage) return;
+    const targetRatio = rw/rh;
+    const curRatio = fullW/fullH;
+    let cropW, cropH;
+    if(curRatio > targetRatio){ cropH = fullH; cropW = Math.round(fullH*targetRatio); }
+    else { cropW = fullW; cropH = Math.round(fullW/targetRatio); }
+    const offX = Math.round((fullW-cropW)/2);
+    const offY = Math.round((fullH-cropH)/2);
+    const tmp = document.createElement('canvas');
+    tmp.width = cropW; tmp.height = cropH;
+    tmp.getContext('2d').drawImage(fullCanvas, -offX, -offY);
+    setFullFromDraw(cropW, cropH, ctx=> ctx.drawImage(tmp,0,0));
+    render();
+  }
+  document.querySelectorAll('.crop-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      if(!hasImage) return;
+      const r = parseFloat(chip.dataset.ratio);
+      if(r === 0){ resetTransform(); return; }
+      cropToRatio(r, 1);
+    });
+  });
 
   // ---------- Upload handling ----------
   uploadBtn.addEventListener('click', ()=> fileInput.click());
@@ -542,7 +635,7 @@
     stageActions.classList.remove('show');
     controlsWrap.classList.add('disabled-veil');
     hasImage = false;
-    applyPreset('Aucun');
+    applyPreset('None');
   });
 
   function loadFile(file){
@@ -557,18 +650,11 @@
   }
 
   function setupImage(img){
-    const MAX = 1400;
-    let w = img.naturalWidth, h = img.naturalHeight;
-    const scale = Math.min(1, MAX / Math.max(w,h));
-    W = Math.round(w*scale); H = Math.round(h*scale);
+    const w = img.naturalWidth, h = img.naturalHeight;
+    pristineCanvas.width = w; pristineCanvas.height = h;
+    pristineCanvas.getContext('2d').drawImage(img, 0,0);
 
-    workCanvas.width = W; workCanvas.height = H;
-    workCtx.clearRect(0,0,W,H);
-    workCtx.drawImage(img, 0,0, W, H);
-
-    backCanvas.width = W; backCanvas.height = H;
-    frontCanvas.width = W; frontCanvas.height = H;
-    backCtx.drawImage(workCanvas, 0,0);
+    setFullFromDraw(w, h, ctx=> ctx.drawImage(img,0,0));
 
     dropZone.style.display = 'none';
     canvasFrame.style.display = 'block';
@@ -578,8 +664,9 @@
 
     splitPct = 50;
     updateDivider();
-    applyPreset('Aucun');
+    applyPreset('None');
     render();
+    canvasFrame.scrollIntoView({ behavior:'smooth', block:'center' });
   }
 
   // ---------- Camera capture ----------
@@ -600,7 +687,7 @@
       currentStream = await navigator.mediaDevices.getUserMedia(constraints);
       cameraVideo.srcObject = currentStream;
     }catch(err){
-      cameraContent.innerHTML = '<div class="cam-error">Impossible d\'accéder à la caméra.<br>Vérifiez les autorisations du navigateur, ou que le site est ouvert en HTTPS.<br><br>('+err.message+')</div>';
+      cameraContent.innerHTML = '<div class="cam-error">Could not access the camera.<br>Check your browser/app permissions.<br><br>('+err.message+')</div>';
     }
   }
   function stopStream(){
@@ -631,7 +718,7 @@
     img.src = captureCanvas.toDataURL('image/png');
   });
 
-  // ---------- Rendering pipeline ----------
+  // ---------- Rendering pipeline (shared by live preview and HD export) ----------
   let rafId = null;
   function scheduleRender(){
     if(rafId) cancelAnimationFrame(rafId);
@@ -640,89 +727,90 @@
 
   function render(){
     if(!hasImage) return;
-    const v = {}; sliderKeys.forEach(k=> v[k] = +sliders[k].value);
+    paintEffects(workCanvas, W, H, readValues(), frontCtx);
+    updateDivider();
+  }
 
+  function paintEffects(srcCanvas, w, h, v, destCtx){
     const combinedBrightPct = (100 + v.bright) * (1 + v.expo/100*0.8);
     const contrastPct = 100 + v.contrast;
     const satPct = Math.max(0, 100 + v.sat);
 
-    frontCtx.clearRect(0,0,W,H);
-    frontCtx.filter = `brightness(${combinedBrightPct}%) contrast(${contrastPct}%) saturate(${satPct}%)`;
-    frontCtx.drawImage(workCanvas, 0,0);
-    frontCtx.filter = 'none';
+    destCtx.clearRect(0,0,w,h);
+    destCtx.filter = `brightness(${combinedBrightPct}%) contrast(${contrastPct}%) saturate(${satPct}%)`;
+    destCtx.drawImage(srcCanvas, 0,0, w, h);
+    destCtx.filter = 'none';
 
     if(v.warmth !== 0){
-      frontCtx.globalCompositeOperation = 'soft-light';
+      destCtx.globalCompositeOperation = 'soft-light';
       const alpha = Math.min(0.55, Math.abs(v.warmth)/100 * 0.9);
-      frontCtx.fillStyle = v.warmth > 0 ? `rgba(255,158,68,${alpha})` : `rgba(72,140,255,${alpha})`;
-      frontCtx.fillRect(0,0,W,H);
-      frontCtx.globalCompositeOperation = 'source-over';
+      destCtx.fillStyle = v.warmth > 0 ? `rgba(255,158,68,${alpha})` : `rgba(72,140,255,${alpha})`;
+      destCtx.fillRect(0,0,w,h);
+      destCtx.globalCompositeOperation = 'source-over';
     }
     if(v.tint !== 0){
-      frontCtx.globalCompositeOperation = 'soft-light';
+      destCtx.globalCompositeOperation = 'soft-light';
       const alpha = Math.min(0.5, Math.abs(v.tint)/100 * 0.8);
-      frontCtx.fillStyle = v.tint > 0 ? `rgba(230,110,190,${alpha})` : `rgba(110,200,140,${alpha})`;
-      frontCtx.fillRect(0,0,W,H);
-      frontCtx.globalCompositeOperation = 'source-over';
+      destCtx.fillStyle = v.tint > 0 ? `rgba(230,110,190,${alpha})` : `rgba(110,200,140,${alpha})`;
+      destCtx.fillRect(0,0,w,h);
+      destCtx.globalCompositeOperation = 'source-over';
     }
 
     if(v.shadows !== 0 || v.highlights !== 0 || v.vibrance !== 0){
-      applyToneAndVibrance(frontCtx, W, H, v.shadows/100, v.highlights/100, v.vibrance/100);
+      applyToneAndVibrance(destCtx, w, h, v.shadows/100, v.highlights/100, v.vibrance/100);
     }
 
     if(v.denoise > 0){
       const blurPx = 0.5 + (v.denoise/100) * 2.5;
       const tmp = document.createElement('canvas');
-      tmp.width=W; tmp.height=H;
+      tmp.width=w; tmp.height=h;
       const tctx = tmp.getContext('2d');
       tctx.filter = `blur(${blurPx}px)`;
-      tctx.drawImage(frontCanvas,0,0);
-      frontCtx.globalAlpha = Math.min(0.6, v.denoise/100*0.6);
-      frontCtx.drawImage(tmp,0,0);
-      frontCtx.globalAlpha = 1;
+      tctx.drawImage(destCtx.canvas,0,0);
+      destCtx.globalAlpha = Math.min(0.6, v.denoise/100*0.6);
+      destCtx.drawImage(tmp,0,0);
+      destCtx.globalAlpha = 1;
     }
 
     if(v.smooth > 0){
       const blurPx = 1 + (v.smooth/100) * 7;
       const tmp = document.createElement('canvas');
-      tmp.width=W; tmp.height=H;
+      tmp.width=w; tmp.height=h;
       const tctx = tmp.getContext('2d');
       tctx.filter = `blur(${blurPx}px)`;
-      tctx.drawImage(frontCanvas,0,0);
-      frontCtx.globalAlpha = Math.min(0.85, v.smooth/100*0.85);
-      frontCtx.drawImage(tmp,0,0);
-      frontCtx.globalAlpha = 1;
+      tctx.drawImage(destCtx.canvas,0,0);
+      destCtx.globalAlpha = Math.min(0.85, v.smooth/100*0.85);
+      destCtx.drawImage(tmp,0,0);
+      destCtx.globalAlpha = 1;
     }
 
     if(v.clarity > 0){
-      applyUnsharpMask(frontCtx, W, H, v.clarity/100*0.9, 10);
+      applyUnsharpMask(destCtx, w, h, v.clarity/100*0.9, 10);
     }
     if(v.sharp > 0){
-      applyUnsharpMask(frontCtx, W, H, v.sharp/100*1.6, 2.2);
+      applyUnsharpMask(destCtx, w, h, v.sharp/100*1.6, 2.2);
     }
 
     if(v.grain > 0){
-      applyGrain(frontCtx, W, H, v.grain/100);
+      applyGrain(destCtx, w, h, v.grain/100);
     }
 
     if(v.glow > 0){
       const g = v.glow/100;
-      const bloom = frontCtx.createRadialGradient(W/2, H*0.42, 0, W/2, H*0.42, Math.max(W,H)*0.6);
+      const bloom = destCtx.createRadialGradient(w/2, h*0.42, 0, w/2, h*0.42, Math.max(w,h)*0.6);
       bloom.addColorStop(0, `rgba(255,244,224,${0.10*g})`);
       bloom.addColorStop(1, 'rgba(255,244,224,0)');
-      frontCtx.globalCompositeOperation = 'screen';
-      frontCtx.fillStyle = bloom;
-      frontCtx.fillRect(0,0,W,H);
-      frontCtx.globalCompositeOperation = 'source-over';
+      destCtx.globalCompositeOperation = 'screen';
+      destCtx.fillStyle = bloom;
+      destCtx.fillRect(0,0,w,h);
+      destCtx.globalCompositeOperation = 'source-over';
 
-      const vig = frontCtx.createRadialGradient(W/2,H/2, Math.min(W,H)*0.35, W/2,H/2, Math.max(W,H)*0.75);
+      const vig = destCtx.createRadialGradient(w/2,h/2, Math.min(w,h)*0.35, w/2,h/2, Math.max(w,h)*0.75);
       vig.addColorStop(0, 'rgba(0,0,0,0)');
       vig.addColorStop(1, `rgba(10,5,10,${0.35*g})`);
-      frontCtx.fillStyle = vig;
-      frontCtx.fillRect(0,0,W,H);
+      destCtx.fillStyle = vig;
+      destCtx.fillRect(0,0,w,h);
     }
-
-    updateDivider();
   }
 
   function applyToneAndVibrance(ctx, w, h, shadows, highlights, vibrance){
@@ -829,21 +917,60 @@
     dragging = true;
   });
 
-  // ---------- Download ----------
-  downloadBtn.addEventListener('click', ()=>{
-    const out = document.createElement('canvas');
-    out.width = W; out.height = H;
-    const octx = out.getContext('2d');
-    octx.drawImage(frontCanvas, 0,0);
-    out.toBlob(blob=>{
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'ffabpics-retouche.png';
-      a.click();
-      URL.revokeObjectURL(url);
-    }, 'image/png');
+  // ---------- HD Download (native-aware) ----------
+  downloadBtn.addEventListener('click', async ()=>{
+    if(!hasImage) return;
+    downloadBtn.disabled = true;
+    const originalLabel = downloadBtn.textContent;
+    downloadBtn.textContent = 'Processing…';
+    await new Promise(r=> setTimeout(r, 30)); // let UI repaint before heavy work
+
+    try{
+      const v = readValues();
+      const outCanvas = document.createElement('canvas');
+      outCanvas.width = fullW; outCanvas.height = fullH;
+      paintEffects(fullCanvas, fullW, fullH, v, outCanvas.getContext('2d'));
+      await exportCanvas(outCanvas);
+    } catch(err){
+      console.error(err);
+      showToast('Could not export the photo.');
+    } finally {
+      downloadBtn.disabled = false;
+      downloadBtn.textContent = originalLabel;
+    }
   });
+
+  async function exportCanvas(canvas){
+    const dataUrl = canvas.toDataURL('image/png');
+    const fileName = `ffabpics-${Date.now()}.png`;
+    const isNative = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
+
+    if(isNative && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem){
+      try{
+        const base64 = dataUrl.split(',')[1];
+        const { Filesystem } = window.Capacitor.Plugins;
+        const result = await Filesystem.writeFile({ path: fileName, data: base64, directory: 'CACHE' });
+        if(window.Capacitor.Plugins.Share){
+          await window.Capacitor.Plugins.Share.share({
+            title: 'FFABPICS photo',
+            dialogTitle: 'Save or share your photo',
+            url: result.uri
+          });
+        } else {
+          showToast('Photo saved to app cache: ' + fileName);
+        }
+        return;
+      }catch(err){
+        console.error('Native export failed, falling back to browser download', err);
+      }
+    }
+
+    // Web / PWA fallback
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = fileName;
+    a.click();
+  }
 
 })();
 
