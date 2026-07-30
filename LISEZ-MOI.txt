@@ -1,0 +1,88 @@
+FFABPICS — Projet Android natif (Capacitor)
+====================================================
+
+Ce dossier est un projet complet prêt à être compilé en un vrai fichier
+.apk installable sur n'importe quel téléphone Android — SANS avoir besoin
+d'installer Android Studio, grâce à un service de compilation dans le cloud.
+
+====================================================
+MÉTHODE RECOMMANDÉE — GitHub Actions (gratuit, sans installation)
+====================================================
+Ce projet contient déjà un fichier de configuration
+(.github/workflows/build-apk.yml) qui compile automatiquement l'APK
+dans le cloud à chaque envoi du projet sur GitHub. Minutes illimitées
+et gratuites pour un dépôt public.
+
+ÉTAPE 1 — Créer un compte GitHub (2 min, si tu n'en as pas déjà un)
+  → https://github.com/signup
+
+ÉTAPE 2 — Créer un nouveau dépôt
+  1. Sur https://github.com/new, choisis un nom (ex: "ffabpics"),
+     laisse-le "Public", clique "Create repository"
+
+ÉTAPE 3 — Envoyer ce projet dans le dépôt (deux façons possibles)
+
+  Option A - Sans ligne de commande (le plus simple) :
+    1. Installe GitHub Desktop : https://desktop.github.com
+    2. "Add local repository" → sélectionne ce dossier décompressé
+    3. "Publish repository" → choisis le dépôt créé à l'étape 2
+    4. Clique "Push origin"
+
+  Option B - Avec Git en ligne de commande :
+    cd ffabpics-android
+    git init
+    git add .
+    git commit -m "FFABPICS"
+    git branch -M main
+    git remote add origin https://github.com/TON-PSEUDO/ffabpics.git
+    git push -u origin main
+
+ÉTAPE 4 — Récupérer l'APK compilé
+  1. Sur la page de ton dépôt GitHub, va dans l'onglet "Actions"
+  2. Le workflow "Build FFABPICS APK" démarre automatiquement
+     (compte 3 à 5 minutes)
+  3. Une fois terminé (coche verte ✓), clique sur le build,
+     puis en bas de page dans "Artifacts", télécharge "FFABPICS-apk"
+  4. Décompresse le .zip téléchargé → tu obtiens app-debug.apk
+  5. Transfère ce fichier sur ton téléphone (câble, e-mail, Drive, WhatsApp...)
+     et installe-le (autorise "sources inconnues" si Android le demande).
+
+C'est tout : aucune installation de SDK ni d'Android Studio sur ton
+ordinateur, tout se passe sur les serveurs de GitHub.
+
+====================================================
+ALTERNATIVE — Codemagic (interface graphique, 500 min gratuites/mois)
+====================================================
+Si tu préfères une interface visuelle plutôt que GitHub Actions :
+  1. Envoie d'abord le projet sur GitHub (étapes 1 à 3 ci-dessus)
+  2. Crée un compte gratuit sur https://codemagic.io
+  3. "Add application" → connecte ton compte GitHub → sélectionne le dépôt
+  4. Codemagic détecte le projet Capacitor automatiquement
+  5. Clique "Start new build" → choisis Android → attends la compilation
+  6. Télécharge le .apk depuis la page du build terminé
+
+====================================================
+ALTERNATIVE — Android Studio en local (si tu préfères tout faire toi-même)
+====================================================
+  1. Installe Node.js (https://nodejs.org) et Android Studio
+     (https://developer.android.com/studio)
+  2. Dans ce dossier : npm install puis npx cap sync android
+  3. Ouvre le sous-dossier "android" dans Android Studio
+  4. Build → Build Bundle(s) / APK(s) → Build APK(s)
+  5. Le fichier se trouve dans
+     android/app/build/outputs/apk/debug/app-debug.apk
+
+====================================================
+REMARQUE — Caméra
+====================================================
+La permission caméra est déjà déclarée dans le projet. Au premier lancement,
+Android demandera l'autorisation d'accéder à la caméra quand tu utiliseras
+le bouton "Prendre une photo" dans l'application — c'est normal, accepte-la.
+
+Contenu du dossier :
+  - www/                          → l'application web (identique à la PWA)
+  - android/                      → projet natif Android (Gradle)
+  - .github/workflows/build-apk.yml → compilation automatique dans le cloud
+  - capacitor.config.json          → nom de l'app, identifiant (com.ffabpics.app)
+  - package.json                    → dépendances Capacitor
+
